@@ -7,7 +7,7 @@ Provide an interface for creating boilerplate code for scripts that will take co
     - Is this argument positional or optional?
     - Give the argument a long name and a short name (if optional)
     - Is this argument required?
-    - Type: int, float, string, flag, file, path
+    - Type: int, float, string, flag
     - Number of args? (N, ?, *, +, default)
     - Default value?
     - Choices?
@@ -16,7 +16,9 @@ Provide an interface for creating boilerplate code for scripts that will take co
     - Name of group (for mutually exclusive group only)
 """
 
+import sys
 from argunaut.Argument import Argument
+from argunaut.ScriptWriter import ScriptWriter
 
 def isYes(inputStr: str, default_if_empty: bool) -> bool:
     if inputStr.lower == 'yes' or inputStr.lower == 'y':
@@ -40,8 +42,8 @@ def getShortName():
 
 
 def getArgType():
-    allowed_types = ['string', 'int', 'float']
-    arg_type = input('Argument type (string, float, int): [string]:\n')
+    allowed_types = ['string', 'int', 'float', 'flag']
+    arg_type = input('Argument type (string, float, int, flag): [string]:\n')
 
     # TODO: Prompt the user that they didn't specifiy a valid type.
     if arg_type not in allowed_types:
@@ -108,7 +110,7 @@ def getScriptDescription():
         if len(description) > 0:
             description_complete = True
         else:
-            print('\nYou must provide a descriptions.')
+            print('\nYou must provide a description.')
             description = input('Provide a brief description of this script:\n')
 
     return description
@@ -125,11 +127,11 @@ def addArgument(arg_name: str) -> Argument:
     else:
         arg.required = True
 
+    arg.help_msg = getHelpMsg()
     arg.arg_type = getArgType()
     arg.default_val = getDefaultVal()
     arg.nargs = getNargs()
     arg.choices = getChoices()
-    arg.help_msg = getHelpMsg()
     arg.group_name = getGroupName()
 
     print(arg)
@@ -148,6 +150,11 @@ def main():
         else:
             args.append(addArgument(arg_name))
 
+    if len(args) == 0:
+        sys.exit('No arguments were provided. Aborting.')
+
+    writer = ScriptWriter(script_name, script_description, args)
+    writer.writeScript()
 
 
 if __name__ == '__main__':
