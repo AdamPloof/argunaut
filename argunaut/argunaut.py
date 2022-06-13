@@ -16,20 +16,15 @@ Provide an interface for creating boilerplate code for scripts that will take co
     - Name of group (for mutually exclusive group only)
 """
 
-import argparse
-import pathlib
-import sys
-import readline
-from tokenize import group
-
 from argunaut.Argument import Argument
 
 def isYes(inputStr: str, default_if_empty: bool) -> bool:
-    isYes = False
     if inputStr.lower == 'yes' or inputStr.lower == 'y':
         isYes = True
     elif len(inputStr) == 0:
         isYes = default_if_empty
+    else:
+        isYes = False
 
     return isYes
 
